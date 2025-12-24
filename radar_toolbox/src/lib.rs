@@ -1,7 +1,6 @@
 pub mod core;
 pub mod systems;
 pub mod signals;
-pub mod antennas;
 pub mod targets;
 
 // 2. Re-export the most common types for easy access

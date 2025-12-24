@@ -106,6 +106,20 @@ impl Div<f64> for Complex {
 }
 
 
+// * Pipe trait which lets you chain functions
+pub trait Pipe: Sized {
+    fn pipe<F, R>(self, f: F) -> R
+    where
+        F: FnOnce(Self) -> R,
+    {
+        f(self)
+    }
+}
+
+// Implement it for every type T
+impl<T> Pipe for T {}
+
+
 #[cfg(test)]
 mod tests {
     use super::*; // Import everything from the parent module
