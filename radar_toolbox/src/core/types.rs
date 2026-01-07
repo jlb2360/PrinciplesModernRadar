@@ -73,10 +73,24 @@ impl Mul<f64> for Complex{
     }
 }
 
+impl Add<f64> for Complex{
+    type Output = Self;
+    fn add(self, rhs: f64) -> Self::Output {
+        Self{re: self.re + rhs, im: self.im}
+    }
+}
+
 impl Mul<Complex> for f64 {
     type Output = Complex;
     fn mul(self, complex: Complex) -> Complex {
         Complex { re: self * complex.re, im: self * complex.im }
+    }
+}
+
+impl Add<Complex> for f64 {
+    type Output = Complex;
+    fn add(self, rhs: Complex) -> Self::Output {
+        Complex { re: self + rhs.re, im: rhs.im }
     }
 }
 

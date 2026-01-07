@@ -1,6 +1,8 @@
+use std::f64::consts::PI;
+
 use crate::core::types::Pipe;
 use crate::core::constants::*;
-use crate::systems::physics;
+use crate::systems::physics::simple;
 
 
 pub enum ClutterType {
@@ -19,7 +21,7 @@ pub struct SimpleRadar{
     rec_b: f64,
     l_tx: f64,
     l_rx: f64,
-    l_atm_dB_km: f64,
+    l_atm_db_km: f64,
     ae: f64
 }
 
@@ -44,46 +46,46 @@ impl SimpleRadar{
     pub fn radar_range_equation(&self, rcs: f64, range: f64)->f64{
         if self.ae != 0.0{
             self.pt
-                .pipe(|pc| physics::chain_loss(pc, self.l_tx))
-                .pipe(|pc| physics::transmission_f(pc, self.gt))
-                .pipe(|pc| physics::propogation(pc, range))
-                .pipe(|pc| physics::atm_attenuation(pc, range, self.l_atm_dB_km))
-                .pipe(|pc| physics::reflection(pc, rcs))
-                .pipe(|pc| physics::propogation(pc, range))
-                .pipe(|pc| physics::atm_attenuation(pc, range, self.l_atm_dB_km))
-                .pipe(|pc| physics::reception_ae(pc, self.ae))
-                .pipe(|pc| physics::chain_loss(pc, self.l_rx))
+                .pipe(|pc| simple::chain_loss(pc, self.l_tx))
+                .pipe(|pc| simple::transmission_f(pc, self.gt))
+                .pipe(|pc| simple::propogation(pc, range))
+                .pipe(|pc| simple::atm_attenuation(pc, range, self.l_atm_db_km))
+                .pipe(|pc| simple::reflection(pc, rcs))
+                .pipe(|pc| simple::propogation(pc, range))
+                .pipe(|pc| simple::atm_attenuation(pc, range, self.l_atm_db_km))
+                .pipe(|pc| simple::reception_ae(pc, self.ae))
+                .pipe(|pc| simple::chain_loss(pc, self.l_rx))
         } else {
             self.pt
-                .pipe(|pc| physics::chain_loss(pc, self.l_tx))
-                .pipe(|pc| physics::transmission_f(pc, self.gt))
-                .pipe(|pc| physics::propogation(pc, range))
-                .pipe(|pc| physics::atm_attenuation(pc, range, self.l_atm_dB_km))
-                .pipe(|pc| physics::reflection(pc, rcs))
-                .pipe(|pc| physics::propogation(pc, range))
-                .pipe(|pc| physics::atm_attenuation(pc, range, self.l_atm_dB_km))
-                .pipe(|pc| physics::reception(pc, C/self.fc, self.gr))
-                .pipe(|pc| physics::chain_loss(pc, self.l_rx))
+                .pipe(|pc| simple::chain_loss(pc, self.l_tx))
+                .pipe(|pc| simple::transmission_f(pc, self.gt))
+                .pipe(|pc| simple::propogation(pc, range))
+                .pipe(|pc| simple::atm_attenuation(pc, range, self.l_atm_db_km))
+                .pipe(|pc| simple::reflection(pc, rcs))
+                .pipe(|pc| simple::propogation(pc, range))
+                .pipe(|pc| simple::atm_attenuation(pc, range, self.l_atm_db_km))
+                .pipe(|pc| simple::reception(pc, C/self.fc, self.gr))
+                .pipe(|pc| simple::chain_loss(pc, self.l_rx))
         }
     }
 
     pub fn jamming_power(&self, other: &SimpleRadar, range: f64)->f64{
         if self.ae != 0.0{
             other.pt
-                .pipe(|pc| physics::chain_loss(pc, other.l_tx))
-                .pipe(|pc| physics::transmission_f(pc, other.gt))
-                .pipe(|pc| physics::propogation(pc, range))
-                .pipe(|pc| physics::atm_attenuation(pc, range, other.l_atm_dB_km))
-                .pipe(|pc| physics::reception_ae(pc, self.ae))
-                .pipe(|pc| physics::chain_loss(pc, self.l_rx))
+                .pipe(|pc| simple::chain_loss(pc, other.l_tx))
+                .pipe(|pc| simple::transmission_f(pc, other.gt))
+                .pipe(|pc| simple::propogation(pc, range))
+                .pipe(|pc| simple::atm_attenuation(pc, range, other.l_atm_db_km))
+                .pipe(|pc| simple::reception_ae(pc, self.ae))
+                .pipe(|pc| simple::chain_loss(pc, self.l_rx))
         } else {
             other.pt
-                .pipe(|pc| physics::chain_loss(pc, other.l_tx))
-                .pipe(|pc| physics::transmission_f(pc, other.gt))
-                .pipe(|pc| physics::propogation(pc, range))
-                .pipe(|pc| physics::atm_attenuation(pc, range, other.l_atm_dB_km))
-                .pipe(|pc| physics::reception(pc, C/self.fc, self.gr))
-                .pipe(|pc| physics::chain_loss(pc, self.l_rx))
+                .pipe(|pc| simple::chain_loss(pc, other.l_tx))
+                .pipe(|pc| simple::transmission_f(pc, other.gt))
+                .pipe(|pc| simple::propogation(pc, range))
+                .pipe(|pc| simple::atm_attenuation(pc, range, other.l_atm_db_km))
+                .pipe(|pc| simple::reception(pc, C/self.fc, self.gr))
+                .pipe(|pc| simple::chain_loss(pc, self.l_rx))
         }
     }
 
@@ -97,30 +99,41 @@ impl SimpleRadar{
 
     pub fn volume_clutter_return(&self, rcs_0: f64, range: f64, volume: f64)->f64{
          self.pt
-            .pipe(|pc| physics::chain_loss(pc, self.l_tx))
-            .pipe(|pc| physics::transmission_f(pc, self.gt))
-            .pipe(|pc| physics::propogation(pc, range))
-            .pipe(|pc| physics::atm_attenuation(pc, range, self.l_atm_dB_km))
-            .pipe(|pc| physics::reflection(pc, rcs_0 * volume))
-            .pipe(|pc| physics::propogation(pc, range))
-            .pipe(|pc| physics::atm_attenuation(pc, range, self.l_atm_dB_km))
-            .pipe(|pc| physics::reception(pc, C/self.fc, self.gr))
-            .pipe(|pc| physics::chain_loss(pc, self.l_rx))
+            .pipe(|pc| simple::chain_loss(pc, self.l_tx))
+            .pipe(|pc| simple::transmission_f(pc, self.gt))
+            .pipe(|pc| simple::propogation(pc, range))
+            .pipe(|pc| simple::atm_attenuation(pc, range, self.l_atm_db_km))
+            .pipe(|pc| simple::reflection(pc, rcs_0 * volume))
+            .pipe(|pc| simple::propogation(pc, range))
+            .pipe(|pc| simple::atm_attenuation(pc, range, self.l_atm_db_km))
+            .pipe(|pc| simple::reception(pc, C/self.fc, self.gr))
+            .pipe(|pc| simple::chain_loss(pc, self.l_rx))
     }
 
     pub fn surface_clutter_return(&self, rcs_0: f64, range: f64, area: f64)->f64{
         self.pt
-            .pipe(|pc| physics::chain_loss(pc, self.l_tx))
-            .pipe(|pc| physics::transmission_f(pc, self.gt))
-            .pipe(|pc| physics::propogation(pc, range))
-            .pipe(|pc| physics::atm_attenuation(pc, range, self.l_atm_dB_km))
-            .pipe(|pc| physics::reflection(pc, rcs_0 * area))
-            .pipe(|pc| physics::propogation(pc, range))
-            .pipe(|pc| physics::atm_attenuation(pc, range, self.l_atm_dB_km))
-            .pipe(|pc| physics::reception(pc, C/self.fc, self.gr))
-            .pipe(|pc| physics::chain_loss(pc, self.l_rx))
+            .pipe(|pc| simple::chain_loss(pc, self.l_tx))
+            .pipe(|pc| simple::transmission_f(pc, self.gt))
+            .pipe(|pc| simple::propogation(pc, range))
+            .pipe(|pc| simple::atm_attenuation(pc, range, self.l_atm_db_km))
+            .pipe(|pc| simple::reflection(pc, rcs_0 * area))
+            .pipe(|pc| simple::propogation(pc, range))
+            .pipe(|pc| simple::atm_attenuation(pc, range, self.l_atm_db_km))
+            .pipe(|pc| simple::reception(pc, C/self.fc, self.gr))
+            .pipe(|pc| simple::chain_loss(pc, self.l_rx))
 
     }
+    
+    pub fn range(
+        time: f64
+    ) -> f64 {
+        C * time
+    }
+
+    pub fn phase_change(&self, time: f64)->f64{
+        2.0 * PI * self.fc * time  
+    }
+
 
 }
 
@@ -135,7 +148,7 @@ pub struct SimpleRadarBuilder{
     rec_b: Option<f64>,
     l_tx: Option<f64>,
     l_rx: Option<f64>,
-    l_atm_dB_km: Option<f64>,
+    l_atm_db_km: Option<f64>,
     ae: Option<f64>
 }
 
@@ -151,7 +164,7 @@ impl SimpleRadarBuilder {
             rec_b: None,
             l_tx: None,
             l_rx: None,
-            l_atm_dB_km: None,
+            l_atm_db_km: None,
             ae: None,
         }
     }
@@ -197,7 +210,7 @@ impl SimpleRadarBuilder {
     }
 
     pub fn atmospheric_loss(mut self, l_atm: f64)->Self{
-        self.l_atm_dB_km = Some(l_atm);
+        self.l_atm_db_km = Some(l_atm);
         self
     }
     
@@ -216,7 +229,7 @@ impl SimpleRadarBuilder {
             rec_b: self.rec_b.unwrap_or(1E6), // default to a 1 MHz receiver bandwidth
             l_tx: self.l_tx.unwrap_or(1.0), // default to no transmit loss
             l_rx: self.l_rx.unwrap_or(1.0), // default to no receive loss
-            l_atm_dB_km: self.l_atm_dB_km.unwrap_or(0.0), // default to no atmospheric loss
+            l_atm_db_km: self.l_atm_db_km.unwrap_or(0.0), // default to no atmospheric loss
             ae: self.ae.unwrap_or(0.0)
         })
     }
