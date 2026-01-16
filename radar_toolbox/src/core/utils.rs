@@ -11,4 +11,3 @@ pub fn factorial(n: u128) -> u128 {
     (1..=n).product()
 }
 
-

@@ -2,6 +2,7 @@ pub mod core;
 pub mod systems;
 pub mod signals;
 pub mod targets;
+pub mod antennas;
 
 // 2. Re-export the most common types for easy access
 // User can write `use radar_lib::Complex` instead of `use radar_lib::core::types::Complex`

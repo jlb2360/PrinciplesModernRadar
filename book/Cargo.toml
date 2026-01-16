@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 radar_toolbox = { path = "../radar_toolbox" }
+plotters = "0.3"

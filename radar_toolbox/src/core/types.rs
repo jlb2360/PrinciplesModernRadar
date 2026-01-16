@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Mul, Div, Neg};
+use std::{iter::Sum, ops::{Add, Div, Mul, Neg, Sub}};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Complex{
@@ -12,8 +12,16 @@ impl Complex{
     
     pub fn zero() -> Self { Self { re: 0.0, im: 0.0 }}
 
-    pub fn exp(theta: f64) -> Self {
+    pub fn from_polar(theta: f64) -> Self {
         Self { re: theta.cos(), im: theta.sin() }
+    }
+
+    pub fn exp(&self)->Self{
+        let exp_re = self.re.exp();
+        Self {
+            re: exp_re * self.im.cos(),
+            im: exp_re * self.im.sin(),
+        }
     }
 
     pub fn abs(&self) -> f64 {
@@ -118,6 +126,70 @@ impl Div<f64> for Complex {
         Self { re: self.re / scalar, im: self.im / scalar }
     }
 }
+
+impl Sum for Complex {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(Complex { re: 0.0, im: 0.0 }, |a, b| a + b)
+    }
+}
+
+impl<'a> Sum<&'a Complex> for Complex {
+    fn sum<I: Iterator<Item = &'a Complex>>(iter: I) -> Self {
+        iter.fold(Complex { re: 0.0, im: 0.0 }, |a, b| Complex {
+            re: a.re + b.re,
+            im: a.im + b.im,
+        })
+    }
+}
+
+
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct Vec3{
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+}
+
+impl Vec3 {
+    pub fn new(x: f64, y: f64, z: f64) -> Self{
+        Vec3{x, y, z}
+    }
+
+    pub fn dot(self, other: Vec3) -> f64 {
+        self.x * other.x + self.y * other.y + self.z * other.z
+    }
+
+    pub fn length(self) -> f64{
+        (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
+    }
+
+    pub fn normalize(self) -> Vec3 {
+        let len = self.length();
+        Vec3 {
+            x: self.x/len,
+            y: self.y/len,
+            z: self.z/len,
+        }
+    }
+}
+
+
+impl Add for Vec3 {
+    type Output = Self;
+    fn add(self, other: Self) -> Self{
+        Vec3::new(self.x + other.x, self.y + other.y, self.z + other.z)
+    }
+}
+
+impl Sub for Vec3 {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self{
+        Vec3::new(self.x - other.x, self.y - other.y, self.z - other.z)
+    }
+}
+
+
 
 
 // * Pipe trait which lets you chain functions

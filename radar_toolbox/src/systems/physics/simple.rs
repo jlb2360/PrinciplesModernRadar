@@ -1,5 +1,21 @@
 use std::f64::consts::PI;
 
+use crate::C;
+
+pub fn doppler_to_velocity(
+    fd: f64,
+    fc: f64
+)->f64{
+    fd * C / (2.0 * fc)
+}
+
+pub fn doppler_frequency(
+    fc: f64,
+    vel: f64
+) -> f64 {
+    2.0 * vel * fc / C
+}
+
 // calculations done in power
 pub fn transmission_f(
     current_power: f64,

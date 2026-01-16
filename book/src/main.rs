@@ -5,6 +5,8 @@ mod ch3;
 mod ch4;
 mod ch5;
 mod ch7;
+mod ch8;
+mod ch9;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -76,7 +78,29 @@ fn main() {
         "7.9" => ch7::p9::solve(),
         "7.10" => ch7::p10::solve(),
         "7.11" => ch7::p11::solve(),
-    
+        
+        // chapter 8
+        "8.1" => ch8::p1::solve(),
+        "8.2" => ch8::p2::solve(),
+        "8.4" => ch8::p4::solve(),
+        "8.5" => ch8::p5::solve(),
+        "8.6" => ch8::p6::solve(),
+        "8.7" => ch8::p7::solve(),
+        "8.9" => ch8::p9::solve(),
+        "8.10" => ch8::p10::solve(),
+        "8.11" => ch8::p11::solve(),
+        "8.13" => ch8::p13::solve(),
+        "8.17" => ch8::p17::solve(),
+
+        // chapter 9
+        "9.1" => ch9::p1::solve(),
+        "9.2" => ch9::p2::solve(),
+        "9.3" => ch9::p3::solve(),
+        "9.4" => ch9::p4::solve(),
+        "9.5" => ch9::p5::solve(),
+        "9.8" => ch9::p8::solve(),
+        "9.9" => ch9::p9::solve(),
+
 
         _ => eprintln!("Problem '{}' not found or not implemented yet.", target),
     }
